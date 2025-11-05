@@ -93,3 +93,21 @@ select{
   display: inline-block;
   padding-bottom: 5px;
 }
+.craousel-container{
+  position: relative;
+  margin-bottom: 50px;
+}
+
+.craousel{
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 15px;
+  padding: 10px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+} 
+.craousel::-webkit-scrollbar {
+  display: none;
+}
+
