@@ -19,8 +19,8 @@ The app fetches data from a movie API (like OMDb or TMDB) to display movie detai
 
 🛠️ Tech Stack
 Tech	Purpose
-⚡ HTML5	Structure and layout
-🎨 CSS3	Styling and responsive design
-🧩 JavaScript (ES6)	Logic, filtering, and API integration
-🌐 OMDb / TMDB API	Movie data source
+⚡ HTML5	Structure and layout <br>
+🎨 CSS3	Styling and responsive design<br>
+🧩 JavaScript (ES6)	Logic, filtering, and API integration<br>
+🌐 OMDb / TMDB API	Movie data source<br>
 🧰 VS Code + GitHub	Development & version control
