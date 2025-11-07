@@ -428,11 +428,184 @@ select:hover {
   }
 }
 
+/* ===========================
+   MOVIE DETAILS MODAL
+   =========================== */
+.movie-details-modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
 
-/* 🎬 Small button for movie cards */
+.movie-details-modal.show {
+  display: flex;
+  animation: fadeIn 0.3s ease-in-out;
+}
 
+.movie-details-content {
+  background: #1c1c1c;
+  border-radius: 15px;
+  max-width: 900px;
+  width: 90%;
+  color: #fff;
+  overflow: hidden;
+  box-shadow: 0 0 25px rgba(229, 9, 20, 0.5);
+  position: relative;
+}
 
+.close-details-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 2rem;
+  color: #fff;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
 
+.close-details-btn:hover {
+  color: #e50914;
+}
+
+.movie-details-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 30px;
+}
+
+.details-poster {
+  width: 250px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.details-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.details-info h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.details-meta {
+  font-size: 0.95rem;
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+.details-genres {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 15px;
+}
+
+.details-overview {
+  font-size: 1rem;
+  color: #ddd;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .movie-details-body {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .details-poster {
+    width: 70%;
+  }
+}
+
+/* ===========================
+   TRAILER MODAL
+   =========================== */
+.trailer-modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  justify-content: center;
+  align-items: center;
+}
+
+.trailer-modal.show {
+  display: flex;
+  animation: fadeIn 0.4s ease;
+}
+
+.trailer-content {
+  position: relative;
+  width: 80%;
+  max-width: 900px;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 2rem;
+  color: #fff;
+  cursor: pointer;
+  z-index: 10;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #e50914;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.play-btn-small {
+  background: rgba(229, 9, 20, 0.9);
+  border: none;
+  color: #fff;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  z-index: 10;
+  position: relative;
+}
+
+.play-btn-small:hover {
+  background: #f40612;
+  transform: scale(1.1);
+}
 
 /* Responsive */
 @media (max-width: 768px) {

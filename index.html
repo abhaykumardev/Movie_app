@@ -57,14 +57,12 @@
           </div>
           <button class="craousel-btn next" id="trendingnext">&#10095;</button>
         </div>
-        
       </div>
 
       <div class="sectiontitle" id="randomsectiontitle">Discover Movies</div>
       <div class="moviegrid" id="movielist">
         <div class="loading">Loading Movies...</div>
       </div>
-      
 
       <div class="load-more-container">
         <button id="loadMoreBtn" class="load-more-btn">Load More</button>
@@ -72,12 +70,44 @@
     </div>
 
     <div id="trailerModal" class="trailer-modal">
-  <div class="trailer-content">
-    <span class="close-btn" id="closeTrailer">&times;</span>
-    <iframe id="trailerFrame" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
-  </div>
-</div>
+      <div class="trailer-content">
+        <span class="close-btn" id="closeTrailer">&times;</span>
+        <iframe
+          id="trailerFrame"
+          width="100%"
+          height="100%"
+          frameborder="0"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
 
+    <!-- 🎬 Movie Details Popup -->
+    <div id="movieDetailsModal" class="movie-details-modal">
+      <div class="movie-details-content">
+        <span class="close-details-btn" id="closeDetails">&times;</span>
+
+        <div class="movie-details-body">
+          <img
+            id="detailsPoster"
+            class="details-poster"
+            src=""
+            alt="Movie Poster"
+          />
+          <div class="details-info">
+            <h2 id="detailsTitle"></h2>
+            <p class="details-meta" id="detailsMeta"></p>
+            <p class="details-genres" id="detailsGenres"></p>
+            <p class="details-overview" id="detailsOverview"></p>
+            <button class="play-btn-hero" id="detailsPlayBtn">
+              
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
 
     <script src="script.js"></script>
   </body>

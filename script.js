@@ -26,47 +26,25 @@ class MovieExplorer {
   //play trailer functionality
 
   async playTrailer(movieId) {
-    const modal = document.getElementById("trailerModal");
-    const iframe = document.getElementById("trailerFrame");
-    const closeBtn = document.getElementById("closeTrailer");
+    const modal = document.getElementById('trailerModal');
+  const frame = document.getElementById('trailerFrame');
+  const apiKey = "129ae02015efceb484546c5ac4be2b3a"; // replace with real key
 
-    try {
-      const response = await fetch(
-        `${this.BASE_URL}/movie/${movieId}/videos?api_key=${this.API_KEY}`
-      );
-      const data = await response.json();
-
-      // Filter for official YouTube trailer
-      const trailer = data.results.find(
-        (vid) =>
-          vid.site === "YouTube" &&
-          (vid.type === "Trailer" || vid.type === "Teaser")
-      );
-
+  fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${apiKey}&language=en-US`)
+    .then(res => res.json())
+    .then(data => {
+      const trailer = data.results.find(v => v.site === 'YouTube' && v.type === 'Trailer');
       if (trailer) {
-        iframe.src = `https://www.youtube.com/embed/${trailer.key}?autoplay=1`;
-        modal.classList.add("show");
+        frame.src = `https://www.youtube.com/embed/${trailer.key}?autoplay=1&rel=0`;
+        modal.classList.add('show');
       } else {
-        alert("No trailer available for this movie.");
+        alert('Sorry, trailer not available for this movie.');
       }
-
-      // Close modal
-      closeBtn.onclick = () => {
-        iframe.src = "";
-        modal.classList.remove("show");
-      };
-
-      // Close when clicking outside the video
-      modal.onclick = (e) => {
-        if (e.target === modal) {
-          iframe.src = "";
-          modal.classList.remove("show");
-        }
-      };
-    } catch (error) {
-      console.error("Error fetching trailer:", error);
-      alert("Failed to load trailer.");
-    }
+    })
+    .catch(err => {
+      console.error('Trailer fetch failed:', err);
+      alert('Error loading trailer.');
+    });
   }
   // -----------------------------
   // Hero Section
@@ -343,57 +321,69 @@ class MovieExplorer {
   // -----------------------------
   // Display Movie Cards
   // -----------------------------
-  displayMovies(movies, containerId) {
-    const container = document.getElementById(containerId);
-    if (!movies || movies.length === 0) {
-      container.innerHTML = `
-        <div>
-          <h2>No movies found.</h2>
-          <p>Try adjusting your search or filter criteria.</p>
-        </div>`;
-      return;
-    }
+ displayMovies(movies, containerId) {
+  const container = document.getElementById(containerId);
 
-    container.innerHTML = movies.map((m) => this.createMovieCard(m)).join("");
+  if (movies.length === 0) {
+    container.innerHTML = `
+      <div>
+        <h2>No movies found.</h2>
+        <p>Try adjusting your search or filter criteria.</p>
+      </div>`;
+    return;
   }
 
-  createMovieCard(movie) {
-    const posterPath = movie.poster_path
-      ? `${this.IMAGE_BASE_URL}${movie.poster_path}`
-      : this.FALLBACK_IMAGE_URL;
+  // Render the HTML for all movie cards
+  container.innerHTML = movies.map((movie) => this.createMovieCard(movie)).join("");
 
-    const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "N/A";
-    const year = movie.release_date
-      ? new Date(movie.release_date).getFullYear()
-      : "TBA";
-    const description = movie.overview || "No description available.";
-    const genreNames =
-      movie.genre_ids?.length > 0
-        ? movie.genre_ids
-            .slice(0, 2)
-            .map((id) => this.genres[id] || "Unknown")
-            .join(", ")
-        : "N/A";
+  // Now attach click listeners to each movie card
+  const movieCards = container.querySelectorAll(".movie-card");
+  movieCards.forEach((card, index) => {
+    card.addEventListener("click", () => showMovieDetails(movies[index]));
+  });
+}
 
-    return `
-      <div class="movie-card">
-        <img src="${posterPath}" alt="${movie.title}" class="movie-poster" loading="lazy"
-          onerror="this.src='${this.FALLBACK_IMAGE_URL}'" />
 
-          
+createMovieCard(movie) {
+  const posterPath = movie.poster_path
+    ? `${this.IMAGE_BASE_URL}${movie.poster_path}`
+    : this.FALLBACK_IMAGE_URL;
 
-        <div class="movie-info">
-          <div class="movie-title">${movie.title}</div>
-          <div class="movie-meta">
-            <span>${year}</span>
-            <span>⭐ ${rating}</span>
-          </div>
-          <div class="movie-genres">${genreNames}</div>
-          <div class="movie-description">${description}</div>
-        </div>
+  const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "N/A";
+
+  const year = movie.release_date
+    ? new Date(movie.release_date).getFullYear()
+    : "TBA";
+
+  const description = movie.overview
+    ? movie.overview
+    : "No description available.";
+
+  const genre =
+    movie.genre_ids && movie.genre_ids.length > 0
+      ? movie.genre_ids.slice(0, 2).join(", ")
+      : "N/A";
+
+  return `
+    <div class="movie-card">
+      <img src="${posterPath}" alt="${movie.title} Poster" class="movie-poster" loading="lazy"
+        onerror="this.src='${this.FALLBACK_IMAGE_URL}'" />
+      <div class="movie-overlay">
+        <button class="play-btn-small" onclick="app.playTrailer(${movie.id})">▶</button>
       </div>
-    `;
-  }
+      <div class="movie-info">
+        <div class="movie-title">${movie.title}</div>
+        <div class="movie-info">
+          <span class="movie-details">${year}</span>
+          <span class="movie-rating">${rating}</span>
+        </div>
+        <div class="movie-genres">${genre}</div>
+        <div class="movie-description">${description}</div>
+      </div>
+    </div>
+  `;
+}
+
 
   // -----------------------------
   // Search Functionality
@@ -581,3 +571,62 @@ class MovieExplorer {
 document.addEventListener("DOMContentLoaded", () => {
   window.app = new MovieExplorer();
 });
+
+
+// 🎬 Show Movie Details Popup
+function showMovieDetails(movie) {
+  const modal = document.getElementById('movieDetailsModal');
+  const poster = document.getElementById('detailsPoster');
+  const title = document.getElementById('detailsTitle');
+  const meta = document.getElementById('detailsMeta');
+  const genres = document.getElementById('detailsGenres');
+  const overview = document.getElementById('detailsOverview');
+  const playBtn = document.getElementById('detailsPlayBtn');
+
+  // Fill movie info
+  poster.src = movie.poster_path 
+    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` 
+    : 'fallback.jpg';
+  title.textContent = movie.title;
+  meta.textContent = `${movie.release_date?.slice(0, 4) || 'N/A'} | ⭐ ${movie.vote_average?.toFixed(1) || 'N/A'}`;
+  genres.textContent = (movie.genre_names || []).join(', ') || 'N/A';
+  overview.textContent = movie.overview || 'No description available.';
+
+  // Play trailer when button clicked
+  playBtn.onclick = () => playTrailer(movie.id);
+
+  // Show modal
+  modal.classList.add('show');
+}
+
+// 🎥 Close Movie Details Modal
+document.getElementById('closeDetails').addEventListener('click', () => {
+  document.getElementById('movieDetailsModal').classList.remove('show');
+});
+
+// Click outside to close
+window.addEventListener('click', (e) => {
+  const modal = document.getElementById('movieDetailsModal');
+  if (e.target === modal) modal.classList.remove('show');
+});
+
+
+
+// Close Trailer Modal
+document.getElementById('closeTrailer').addEventListener('click', () => {
+  const modal = document.getElementById('trailerModal');
+  const frame = document.getElementById('trailerFrame');
+  frame.src = ''; // Stop video
+  modal.classList.remove('show');
+});
+
+// Click outside trailer modal
+window.addEventListener('click', (e) => {
+  const modal = document.getElementById('trailerModal');
+  if (e.target === modal) {
+    const frame = document.getElementById('trailerFrame');
+    frame.src = '';
+    modal.classList.remove('show');
+  }
+});
+
