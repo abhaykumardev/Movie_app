@@ -1,69 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cineflix-Movie Explorer</title>
-  <link rel="stylesheet" href="index.css">
-</head>
-<body>
-  <div class="header">
-    <div class="logo">Cineflix</div>
-    <div class="search-container">
-      <div class="searchbox">
-        <input type="text" class="search-input" placeholder="Search for movies...">
-      
-      </div>
-      <div class="filter">
-        <select id="generfilter">
-          <option value="">All Geners</option>
-        </select>
-        <select id="generfilter">
-          <option value="">All year</option>
-        </select>
-        <select id="generfilter">
-          <option value="">Sort By</option>
-          <option value="popularity.desc">Most Popular</option>
-          <option value="">Latest Release</option>
-          <option value="vote_average.desc">Top Rated</option>
-          <option value="">A-Z</option>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cineflix - Movie Explorer</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="header">
+      <div class="logo">Cineflix</div>
 
-        </select>
+      <div class="search-container">
+        <div class="searchbox">
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Search for movies..."
+          />
+        </div>
+
+        <div class="filter">
+          <select id="genreSelect">
+            <option value="">All Genres</option>
+          </select>
+          <select id="yearSelect">
+            <option value="">All Years</option>
+          </select>
+          <select id="sortSelect">
+            <option value="">Sort By</option>
+            <option value="popularity.desc">Most Popular</option>
+            <option value="release_date.desc">Latest Release</option>
+            <option value="vote_average.desc">Top Rated</option>
+            <option value="title.asc">A-Z</option>
+          </select>
+        </div>
+
+        <button id="clearbtn" class="clearbtn">Clear All</button>
       </div>
-      <button class="clearbtn">Clear All</button>
     </div>
 
+    <div class="main-container">
+      <div class="trendingsection" id="trendingsection">
+        <div class="sectiontitle">Trending Now</div>
 
-  </div>
-  <div class="main-container">
-    <div class="trendingsection">
-      <div class="sectiontitle">
-        Trending Now
-      </div>
-      <div class="craousel-container">
-        <button class="craousel-btn prev" id="trendprev">
-          &#10094;
-        </button>
-        <div class="craousel" id="trendingcarousel">
-          <div class="loading">
-            Loading trending movies...
+        <div class="craousel-container">
+          <button class="craousel-btn prev" id="trendingprev">&#10094;</button>
+          <div class="craousel" id="trendingcarousel">
+            <div class="loading">Loading trending movies...</div>
           </div>
-          <button class="craousel-btn next" id="trendnext">
-          &#10095
-        </button>
+          <button class="craousel-btn next" id="trendingnext">&#10095;</button>
         </div>
       </div>
-      <div class="sectiontitle" id="randomsectiontitle">
-        Discover Movies
-      </div>
-      <div class="moviegrid" id="moviegrid">
+
+      <div class="sectiontitle" id="randomsectiontitle">Discover Movies</div>
+      <div class="moviegrid" id="movielist">
         <div class="loading">Loading Movies...</div>
       </div>
+      <div class="load-more-container">
+        <button id="loadMoreBtn" class="load-more-btn">Load More</button>
+      </div>
     </div>
-  </div>
-  
 
-
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
