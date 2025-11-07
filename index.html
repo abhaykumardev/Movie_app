@@ -41,6 +41,12 @@
     </div>
 
     <div class="main-container">
+      <div class="hero-section">
+        <div class="hero-slider" id="heroSlider">
+          <div class="loading">Loading featured movies...</div>
+        </div>
+      </div>
+
       <div class="trendingsection" id="trendingsection">
         <div class="sectiontitle">Trending Now</div>
 
@@ -51,16 +57,27 @@
           </div>
           <button class="craousel-btn next" id="trendingnext">&#10095;</button>
         </div>
+        
       </div>
 
       <div class="sectiontitle" id="randomsectiontitle">Discover Movies</div>
       <div class="moviegrid" id="movielist">
         <div class="loading">Loading Movies...</div>
       </div>
+      
+
       <div class="load-more-container">
         <button id="loadMoreBtn" class="load-more-btn">Load More</button>
       </div>
     </div>
+
+    <div id="trailerModal" class="trailer-modal">
+  <div class="trailer-content">
+    <span class="close-btn" id="closeTrailer">&times;</span>
+    <iframe id="trailerFrame" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+  </div>
+</div>
+
 
     <script src="script.js"></script>
   </body>

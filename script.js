@@ -15,11 +15,117 @@ class MovieExplorer {
   }
 
   async init() {
+    await this.loadHeroSection();
     await this.loadTrendingMovies();
     await this.loadGenres();
     this.setupYearFilter();
     this.setupEventListeners();
     await this.loadRandomMovies();
+  }
+
+  //play trailer functionality
+
+  async playTrailer(movieId) {
+    const modal = document.getElementById("trailerModal");
+    const iframe = document.getElementById("trailerFrame");
+    const closeBtn = document.getElementById("closeTrailer");
+
+    try {
+      const response = await fetch(
+        `${this.BASE_URL}/movie/${movieId}/videos?api_key=${this.API_KEY}`
+      );
+      const data = await response.json();
+
+      // Filter for official YouTube trailer
+      const trailer = data.results.find(
+        (vid) =>
+          vid.site === "YouTube" &&
+          (vid.type === "Trailer" || vid.type === "Teaser")
+      );
+
+      if (trailer) {
+        iframe.src = `https://www.youtube.com/embed/${trailer.key}?autoplay=1`;
+        modal.classList.add("show");
+      } else {
+        alert("No trailer available for this movie.");
+      }
+
+      // Close modal
+      closeBtn.onclick = () => {
+        iframe.src = "";
+        modal.classList.remove("show");
+      };
+
+      // Close when clicking outside the video
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          iframe.src = "";
+          modal.classList.remove("show");
+        }
+      };
+    } catch (error) {
+      console.error("Error fetching trailer:", error);
+      alert("Failed to load trailer.");
+    }
+  }
+  // -----------------------------
+  // Hero Section
+  // -----------------------------
+
+  async loadHeroSection() {
+    try {
+      const response = await fetch(
+        `${this.BASE_URL}/trending/movie/week?api_key=${this.API_KEY}`
+      );
+      const data = await response.json();
+      const topMovies = data.results.slice(0, 3); // top 3 trending
+
+      const heroSlider = document.getElementById("heroSlider");
+      heroSlider.innerHTML = topMovies
+        .map((movie, index) => this.createHeroSlide(movie, index === 0))
+        .join("");
+
+      this.startHeroSlider();
+    } catch (error) {
+      console.error("Error loading hero section:", error);
+      document.getElementById("heroSlider").innerHTML =
+        "<div>Failed to load featured movies.</div>";
+    }
+  }
+
+  createHeroSlide(movie, isActive) {
+    const backdropPath = movie.backdrop_path
+      ? `${this.IMAGE_BASE_URL}${movie.backdrop_path}`
+      : this.FALLBACK_IMAGE_URL;
+
+    const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "N/A";
+    const year = movie.release_date
+      ? new Date(movie.release_date).getFullYear()
+      : "TBA";
+
+    return `
+    <div class="hero-slide ${isActive ? "active" : ""}" 
+         style="background-image: url('${backdropPath}')">
+      <div class="hero-overlay">
+        <div class="hero-title">${movie.title}</div>
+        <div class="hero-info">⭐ ${rating} | 📅 ${year}</div>
+        <button class="play-btn" onclick="app.playTrailer(${movie.id})">
+  ▶ Play Trailer
+</button>
+      </div>
+    </div>
+  `;
+  }
+
+  startHeroSlider() {
+    const slides = document.querySelectorAll(".hero-slide");
+    let currentSlide = 0;
+
+    setInterval(() => {
+      slides[currentSlide].classList.remove("active");
+      currentSlide = (currentSlide + 1) % slides.length;
+      slides[currentSlide].classList.add("active");
+    }, 5000); // change slide every 5 seconds
   }
 
   // -----------------------------
@@ -58,59 +164,58 @@ class MovieExplorer {
     });
   }
 
-
   //load more button functionality
 
   async loadMoreMovies() {
-  try {
-    this.currentPage++; // go to next page
+    try {
+      this.currentPage++; // go to next page
 
-    let url;
+      let url;
 
-    if (this.isSearching) {
-      // When user is searching
-      const searchInput = document.getElementById("searchInput").value.trim();
-      url = `${this.BASE_URL}/search/movie?api_key=${this.API_KEY}&query=${encodeURIComponent(searchInput)}&page=${this.currentPage}`;
-    } else if (
-      this.currentFilter.genre ||
-      this.currentFilter.year ||
-      this.currentFilter.sort
-    ) {
-      // When filters are applied
-      url = `${this.BASE_URL}/discover/movie?api_key=${this.API_KEY}&page=${this.currentPage}`;
-      if (this.currentFilter.sort)
-        url += `&sort_by=${this.currentFilter.sort}`;
-      if (this.currentFilter.genre)
-        url += `&with_genres=${this.currentFilter.genre}`;
-      if (this.currentFilter.year)
-        url += `&primary_release_year=${this.currentFilter.year}`;
-    } else {
-      // Default random/discover mode
-      url = `${this.BASE_URL}/discover/movie?api_key=${this.API_KEY}&page=${this.currentPage}`;
+      if (this.isSearching) {
+        // When user is searching
+        const searchInput = document.getElementById("searchInput").value.trim();
+        url = `${this.BASE_URL}/search/movie?api_key=${
+          this.API_KEY
+        }&query=${encodeURIComponent(searchInput)}&page=${this.currentPage}`;
+      } else if (
+        this.currentFilter.genre ||
+        this.currentFilter.year ||
+        this.currentFilter.sort
+      ) {
+        // When filters are applied
+        url = `${this.BASE_URL}/discover/movie?api_key=${this.API_KEY}&page=${this.currentPage}`;
+        if (this.currentFilter.sort)
+          url += `&sort_by=${this.currentFilter.sort}`;
+        if (this.currentFilter.genre)
+          url += `&with_genres=${this.currentFilter.genre}`;
+        if (this.currentFilter.year)
+          url += `&primary_release_year=${this.currentFilter.year}`;
+      } else {
+        // Default random/discover mode
+        url = `${this.BASE_URL}/discover/movie?api_key=${this.API_KEY}&page=${this.currentPage}`;
+      }
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      const movies = data.results || [];
+      const container = document.getElementById("movielist");
+
+      // Append instead of replace:
+      container.insertAdjacentHTML(
+        "beforeend",
+        movies.map((m) => this.createMovieCard(m)).join("")
+      );
+
+      // Hide button if no more pages
+      if (this.currentPage >= data.total_pages) {
+        document.getElementById("loadMoreBtn").style.display = "none";
+      }
+    } catch (error) {
+      console.error("Error loading more movies:", error);
     }
-
-    const response = await fetch(url);
-    const data = await response.json();
-
-    const movies = data.results || [];
-    const container = document.getElementById("movielist");
-
-    // Append instead of replace:
-    container.insertAdjacentHTML(
-      "beforeend",
-      movies.map((m) => this.createMovieCard(m)).join("")
-    );
-
-    // Hide button if no more pages
-    if (this.currentPage >= data.total_pages) {
-      document.getElementById("loadMoreBtn").style.display = "none";
-    }
-
-  } catch (error) {
-    console.error("Error loading more movies:", error);
   }
-}
-
 
   // -----------------------------
   // Load Genres
@@ -274,6 +379,9 @@ class MovieExplorer {
       <div class="movie-card">
         <img src="${posterPath}" alt="${movie.title}" class="movie-poster" loading="lazy"
           onerror="this.src='${this.FALLBACK_IMAGE_URL}'" />
+
+          
+
         <div class="movie-info">
           <div class="movie-title">${movie.title}</div>
           <div class="movie-meta">
@@ -471,5 +579,5 @@ class MovieExplorer {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  new MovieExplorer();
+  window.app = new MovieExplorer();
 });
